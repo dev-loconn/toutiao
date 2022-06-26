@@ -1,11 +1,15 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div>
+    问答
   </div>
 </template>
+
 <script>
 export default {
+  name: 'QAIndex'
 }
 </script>
-<style lang="less">
+
+<style>
+
 </style>
