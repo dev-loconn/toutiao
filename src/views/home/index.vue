@@ -47,7 +47,7 @@
       close-icon="cross"
       close-icon-position="top-left"
     >
-      <ChannelEdit :channelList="channels" />
+      <ChannelEdit :channelList="channels" :tabIndex="tabIndex"/>
     </van-popup>
   </div>
 </template>
