@@ -32,34 +32,55 @@
         <article-list :channel="channel" />
       </van-tab>
       <template #nav-right>
-        <div class="more">
+        <div class="more" @click="showChannelPop">
           <i class="tt tt-gengduo"></i>
         </div>
       </template>
     </van-tabs>
+    <!-- 底部弹出-频道设置 -->
+    <van-popup
+      class="popup"
+      v-model="popShow"
+      position="bottom"
+      :style="{ height: '100%' }"
+      closeable
+      close-icon="cross"
+      close-icon-position="top-left"
+    >
+      <ChannelEdit :channelList="channels" />
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { requestChannels } from '@/api/channels'
+import { requestUserChannels } from '@/api/channels'
 import ArticleList from '@/components/article-list'
+import ChannelEdit from '@/views/home/components/ChannelEdit.vue'
 export default {
   name: 'HomeIndex',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   data () {
     return {
       channels: [],
-      tabIndex: ''
+      tabIndex: '',
+      popShow: false
+    }
+  },
+  methods: {
+    showChannelPop () {
+      this.popShow = true
     }
   },
   created () {
     // 请求频道列表
-    requestChannels
+    requestUserChannels
       .then((res) => {
         const { channels } = res.data.data
         this.channels = channels
+        console.log(this.channels)
       })
       .catch((err) => {
         console.log(err)
@@ -136,6 +157,11 @@ export default {
         background-size: contain;
       }
     }
+  }
+
+  // 弹出层的关闭按钮样式
+  /deep/.van-icon-cross {
+    color: #333333;
   }
 }
 </style>
