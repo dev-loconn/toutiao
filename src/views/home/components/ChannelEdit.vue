@@ -6,15 +6,25 @@
 
     <van-cell center title="我的频道" :border="false">
       <template #right-icon>
-        <van-button round type="danger" size="mini">编辑</van-button>
+        <van-button
+          round
+          type="danger"
+          size="mini"
+          @click="isEdit = !isEdit"
+        >
+          {{ isEdit ? '完成' : '编辑' }}
+        </van-button>
       </template>
     </van-cell>
     <van-grid class="channel-my" :gutter="6">
       <van-grid-item
         v-for="(myChannel, index) in channelList"
         :key="myChannel.id"
-        icon="clear"
+        @click="onMyChannelItemClick(myChannel, index)"
       >
+        <template #icon>
+          <van-icon v-if="isEdit" class="icon-click" name="clear" />
+        </template>
         <template #text>
           <span
             class="grid-item-text"
@@ -32,6 +42,7 @@
         :key="value.id"
         :text="value.name"
         icon="plus"
+        @click="onRecommendItemClick(value)"
       />
     </van-grid>
   </div>
@@ -50,7 +61,8 @@ export default {
   },
   data () {
     return {
-      allChannel: []
+      allChannel: [],
+      isEdit: false
     }
   },
   computed: {
@@ -61,6 +73,25 @@ export default {
           return channel.id === item.id
         })
       })
+    }
+  },
+  methods: {
+    onRecommendItemClick (value) {
+      // 当我的频道列表数据发生改变，计算属性会重新计算
+      // 这时候就会把添加进channelList的数据也从allChannel筛选掉
+      // 就不用我们自己去allChannel删除了
+      // this.channelList.push(value)
+      console.log(value)
+    },
+    // 点击我的频道项目
+    onMyChannelItemClick (channel, index) {
+      console.log(channel, index)
+      if (this.isEdit) {
+        console.log(this.isEdit)
+      } else {
+        // 跳转到相应的 Tab
+        this.$emit('onSwitchMyChannelTab', index)
+      }
     }
   },
   async created () {
@@ -122,6 +153,9 @@ export default {
         position: relative;
         border: unset;
         border-radius: 3px;
+        .van-grid-item__icon-wrapper {
+          position: unset;
+        }
         .van-icon {
           position: absolute;
           top: -6px;

@@ -47,7 +47,7 @@
       close-icon="cross"
       close-icon-position="top-left"
     >
-      <ChannelEdit :channelList="channels" :tabIndex="tabIndex"/>
+      <ChannelEdit :channelList="channels" :tabIndex="tabIndex" @onSwitchMyChannelTab="onSwitchMyChannelTab"/>
     </van-popup>
   </div>
 </template>
@@ -72,6 +72,10 @@ export default {
   methods: {
     showChannelPop () {
       this.popShow = true
+    },
+    onSwitchMyChannelTab (index) {
+      this.tabIndex = index
+      this.popShow = false
     }
   },
   created () {
