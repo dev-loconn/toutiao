@@ -63,6 +63,7 @@ import { requestUserChannels } from '@/api/channels'
 import ArticleList from '@/components/article-list'
 import ChannelEdit from '@/views/home/components/ChannelEdit.vue'
 import { getItem, setItem } from '@/utils/localStore'
+import { mapState } from 'vuex'
 export default {
   name: 'HomeIndex',
   components: {
@@ -110,20 +111,28 @@ export default {
         })
     }
   },
+  computed: {
+    ...mapState('loginInfo', ['tokenInfo'])
+  },
   created () {
     // 请求频道列表
     if (this.$store.state.loginInfo.tokenInfo) {
-      // 已登录
+      // 已登录，请求服务器数据
       this.requestChannels(false)
     } else {
-      // 未登录,先获取本地数据,没有数据再获取网络数据
+      // 未登录,先获取本地数据,如果本地没有数据再获取网络数据
       const localData = getItem('TOUTIAO_CHANNELS')
-      console.log('localData', localData)
       if (localData) {
         this.channels = localData
       } else {
         this.requestChannels(true)
       }
+    }
+  },
+  watch: {
+    // 当登录信息发生改变,重新进行数据初始化
+    tokenInfo () {
+      this.created()
     }
   }
 }

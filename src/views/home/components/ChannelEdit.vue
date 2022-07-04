@@ -48,8 +48,8 @@
 </template>
 
 <script>
-import { requestChannels } from '@/api/channels'
-import { getItem, setItem } from '@/utils/localStore'
+import { requestChannels, setUserChannels } from '@/api/channels'
+import { setItem } from '@/utils/localStore'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -99,13 +99,19 @@ export default {
     }
   },
   watch: {
+    // 监听频道列表数据变化，然后将数据保存到本地或服务器
     channelList (val) {
       if (this.$store.state.loginInfo.tokenInfo) {
-        // 已登录
+        // 已登录，将频道数据保存到服务器
+        const channels = val.map((item, index) => {
+          return { id: item.id, seq: index }
+        })
+        setUserChannels(channels).then((res) => {
+          console.log(res)
+        })
       } else {
-        // 未登录
+        // 未登录，保存到本地
         setItem('TOUTIAO_CHANNELS', val)
-        console.log(getItem('TOUTIAO_CHANNELS'))
       }
     }
   },
