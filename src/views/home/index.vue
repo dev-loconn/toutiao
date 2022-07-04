@@ -47,7 +47,13 @@
       close-icon="cross"
       close-icon-position="top-left"
     >
-      <ChannelEdit :channelList="channels" :tabIndex="tabIndex" @onSwitchMyChannelTab="onSwitchMyChannelTab"/>
+      <ChannelEdit
+        :channelList="channels"
+        :tabIndex="tabIndex"
+        @onRecommendItemClick="onAddChannelByEdit"
+        @onDeleteMyChannel="onDeleteMyChannel"
+        @onSwitchMyChannelTab="onSwitchMyChannelTab"
+      />
     </van-popup>
   </div>
 </template>
@@ -56,6 +62,7 @@
 import { requestUserChannels } from '@/api/channels'
 import ArticleList from '@/components/article-list'
 import ChannelEdit from '@/views/home/components/ChannelEdit.vue'
+import { getItem, setItem } from '@/utils/localStore'
 export default {
   name: 'HomeIndex',
   components: {
@@ -76,19 +83,48 @@ export default {
     onSwitchMyChannelTab (index) {
       this.tabIndex = index
       this.popShow = false
+    },
+    // 在频道编辑里将推荐频道添加到我的频道触发事件
+    onAddChannelByEdit (val) {
+      this.channels.push(val)
+    },
+    // 在频道编辑里删除频道
+    onDeleteMyChannel (index) {
+      // 如果删除的频道小于或等于当前激活的频道,让index-1
+      if (index <= this.tabIndex) {
+        this.tabIndex -= 1
+      }
+      this.channels.splice(index, 1)
+    },
+    requestChannels (isSaveLocal) {
+      requestUserChannels
+        .then((res) => {
+          const { channels } = res.data.data
+          this.channels = channels
+          if (isSaveLocal) {
+            setItem('TOUTIAO_CHANNELS', channels)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   created () {
     // 请求频道列表
-    requestUserChannels
-      .then((res) => {
-        const { channels } = res.data.data
-        this.channels = channels
-        console.log(this.channels)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    if (this.$store.state.loginInfo.tokenInfo) {
+      // 已登录
+      this.requestChannels(false)
+    } else {
+      // 未登录,先获取本地数据,没有数据再获取网络数据
+      const localData = getItem('TOUTIAO_CHANNELS')
+      console.log('localData', localData)
+      if (localData) {
+        this.channels = localData
+      } else {
+        this.requestChannels(true)
+      }
+    }
   }
 }
 </script>

@@ -6,12 +6,7 @@
 
     <van-cell center title="我的频道" :border="false">
       <template #right-icon>
-        <van-button
-          round
-          type="danger"
-          size="mini"
-          @click="isEdit = !isEdit"
-        >
+        <van-button round type="danger" size="mini" @click="isEdit = !isEdit">
           {{ isEdit ? '完成' : '编辑' }}
         </van-button>
       </template>
@@ -23,7 +18,11 @@
         @click="onMyChannelItemClick(myChannel, index)"
       >
         <template #icon>
-          <van-icon v-if="isEdit" class="icon-click" name="clear" />
+          <van-icon
+            v-if="isEdit && !fixdChannel.includes(myChannel.name)"
+            class="icon-click"
+            name="clear"
+          />
         </template>
         <template #text>
           <span
@@ -50,6 +49,7 @@
 
 <script>
 import { requestChannels } from '@/api/channels'
+import { getItem, setItem } from '@/utils/localStore'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -62,6 +62,7 @@ export default {
   data () {
     return {
       allChannel: [],
+      fixdChannel: ['推荐'],
       isEdit: false
     }
   },
@@ -81,23 +82,37 @@ export default {
       // 这时候就会把添加进channelList的数据也从allChannel筛选掉
       // 就不用我们自己去allChannel删除了
       // this.channelList.push(value)
-      console.log(value)
+      this.$emit('onRecommendItemClick', value)
     },
     // 点击我的频道项目
     onMyChannelItemClick (channel, index) {
       console.log(channel, index)
       if (this.isEdit) {
-        console.log(this.isEdit)
+        // 不能删除推荐频道
+        if (this.fixdChannel.includes(channel.name)) return
+        // 删除我的频道项目数据
+        this.$emit('onDeleteMyChannel', index)
       } else {
         // 跳转到相应的 Tab
         this.$emit('onSwitchMyChannelTab', index)
       }
     }
   },
+  watch: {
+    channelList (val) {
+      if (this.$store.state.loginInfo.tokenInfo) {
+        // 已登录
+      } else {
+        // 未登录
+        setItem('TOUTIAO_CHANNELS', val)
+        console.log(getItem('TOUTIAO_CHANNELS'))
+      }
+    }
+  },
   async created () {
+    // 请求所有频道数据
     const res = await requestChannels()
     this.allChannel = res.data?.data?.channels
-    console.log('all', this.allChannel)
   }
 }
 </script>
