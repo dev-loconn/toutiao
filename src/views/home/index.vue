@@ -32,6 +32,7 @@
         <article-list :channel="channel" />
       </van-tab>
       <template #nav-right>
+        <div class="more-holder"></div>
         <div class="more" @click="showChannelPop">
           <i class="tt tt-gengduo"></i>
         </div>
@@ -171,13 +172,15 @@ export default {
     .van-tabs__nav--line {
       height: 45px;
       padding: 0;
-      padding-right: 35px;
-    }
-    .van-tab {
-      min-width: 90px;
-      font-size: 14px;
-      border-right: 1px solid #edeff3;
-      color: #777777;
+      .van-tab {
+        min-width: 70px;
+        font-size: 14px;
+        border-right: 1px solid #edeff3;
+        color: #777777;
+        &:nth-last-child(4) {
+          border-right: 0;
+        }
+      }
     }
     .van-tab--active {
       font-size: 15px;
@@ -186,11 +189,16 @@ export default {
     .van-tabs__line {
       bottom: 8px;
     }
+    .more-holder {
+      width: 35px;
+      height: 44px;
+      flex-shrink: 0;
+    }
     .more {
       position: fixed;
       right: 0;
       width: 35px;
-      height: 45px;
+      height: 44px;
       display: flex;
       justify-content: center;
       align-items: center;
