@@ -1,5 +1,5 @@
 <template>
-  <div class="article-item">
+  <div class="article-item" @click="onItemClick">
     <div class="left-wrap">
       <div class="title van-multi-ellipsis--l2">{{ article.title }}</div>
       <div class="img-list" v-if="article.cover.type === 3">
@@ -24,6 +24,12 @@ export default {
     article: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    onItemClick() {
+      console.log(this.article);
+      this.$router.push(`/article-detail/${this.article.art_id}`)
     }
   }
 }
