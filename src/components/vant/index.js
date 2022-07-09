@@ -3,7 +3,7 @@ import Vue from 'vue'
 import {
   Button, Form, Field, Toast, NavBar, CountDown, Tabbar, TabbarItem,
   Image as VanImage, Grid, GridItem, Cell, CellGroup, Icon, Tab, Tabs,
-  List, PullRefresh, Popup, Search
+  List, PullRefresh, Popup, Search, Divider, Loading
 } from 'vant'
 
 Vue
@@ -27,3 +27,5 @@ Vue
   .use(PullRefresh)
   .use(Popup)
   .use(Search)
+  .use(Divider)
+  .use(Loading)
