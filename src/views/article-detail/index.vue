@@ -1,7 +1,12 @@
 <template>
   <div class="article-container">
     <!-- 导航栏 -->
-    <van-nav-bar @click-left="$router.back()" class="page-nav-bar" left-arrow :title="article.title"></van-nav-bar>
+    <van-nav-bar
+      @click-left="$router.back()"
+      class="page-nav-bar"
+      left-arrow
+      :title="article.title"
+    ></van-nav-bar>
 
     <div class="main-wrap">
       <!-- 加载中 -->
@@ -25,8 +30,8 @@
             fit="cover"
             :src="article.aut_photo"
           />
-          <div slot="title" class="user-name">{{ article.aut_name}}</div>
-          <div slot="label" class="publish-date">{{ article.pubdate}}</div>
+          <div slot="title" class="user-name">{{ article.aut_name }}</div>
+          <div slot="label" class="publish-date">{{ article.pubdate }}</div>
           <van-button
             class="follow-btn"
             type="info"
@@ -37,17 +42,18 @@
             v-if="article.is_followed"
             >关注</van-button
           >
-          <van-button
-            class="follow-btn"
-            round
-            size="small"
-            v-else
-          >已关注</van-button>
+          <van-button class="follow-btn" round size="small" v-else
+            >已关注</van-button
+          >
         </van-cell>
         <!-- /用户信息 -->
 
         <!-- 文章内容 -->
-        <div class="article-content markdown-body" v-html="article.content"></div>
+        <div
+          class="article-content markdown-body"
+          v-html="article.content"
+          ref="articleContent"
+        ></div>
         <van-divider>正文结束</van-divider>
       </div>
       <!-- /加载完成-文章详情 -->
@@ -84,6 +90,7 @@
 
 <script>
 import { getArticleDetail } from '@/api/news'
+import { ImagePreview } from 'vant'
 
 export default {
   name: 'ArticleDetail',
@@ -109,6 +116,7 @@ export default {
         this.isLoading = true
         const { data } = await getArticleDetail(this.id)
         this.article = data.data
+        this.handlerImagePreview()
       } catch ({ response }) {
         this.statusCode = response?.status || 500
       }
@@ -116,6 +124,27 @@ export default {
     },
     onClickLeft() {
       this.$router.back()
+    },
+    handlerImagePreview() {
+      this.$nextTick(function () {
+        const articleContent = this.$refs.articleContent
+        if (articleContent) {
+          const imgs = articleContent.querySelectorAll('img')
+          const imgSrcs = []
+          imgs.forEach((e, i) => {
+            imgSrcs.push(e.src)
+            e.addEventListener('click',  () => {
+              // 打开图片预览
+              console.log(this);
+              ImagePreview({
+                images: imgSrcs,
+                closeable: true,
+                startPosition: i,
+              })
+            })
+          })
+        }
+      })
     }
   }
 }
