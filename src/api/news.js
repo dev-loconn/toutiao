@@ -5,3 +5,9 @@ export const getArticles = (params) => request.get('v1_0/articles', { params })
 
 // 获取新闻详情
 export const getArticleDetail = (id) => request.get(`/v1_0/articles/${id}`)
+
+// 文章点赞
+export const likeArticle = (id) => request.post('/v1_0/article/likings', { target: id})
+
+// 取消点赞
+export const cancelLikeArticle = (id) => request.delete(`/v1_0/article/likings/${id}`)

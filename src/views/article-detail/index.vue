@@ -32,19 +32,12 @@
           />
           <div slot="title" class="user-name">{{ article.aut_name }}</div>
           <div slot="label" class="publish-date">{{ article.pubdate }}</div>
-          <van-button
-            class="follow-btn"
-            type="info"
-            color="#3296fa"
-            round
-            size="small"
-            icon="plus"
-            v-if="article.is_followed"
-            >关注</van-button
-          >
-          <van-button class="follow-btn" round size="small" v-else
-            >已关注</van-button
-          >
+          <!-- 关注 -->
+          <follow-user
+            :isFollow="article.is_followed"
+            :userId="article.aut_id"
+            @update-isfollow="article.is_followed = $event"
+          ></follow-user>
         </van-cell>
         <!-- /用户信息 -->
 
@@ -81,7 +74,7 @@
       >
       <van-icon name="comment-o" :badge="article.comm_count" color="#777" />
       <van-icon color="#777" name="star-o" />
-      <van-icon color="#777" name="good-job-o" />
+      <van-icon color="#777" name="good-job-o" @click="onLikeClick" />
       <van-icon name="share" color="#777777"></van-icon>
     </div>
     <!-- /底部区域 -->
@@ -89,11 +82,15 @@
 </template>
 
 <script>
-import { getArticleDetail } from '@/api/news'
+import { getArticleDetail, likeArticle } from '@/api/news'
 import { ImagePreview } from 'vant'
+import FollowUser from '@/components/follow-user.vue'
 
 export default {
   name: 'ArticleDetail',
+  components: {
+    FollowUser
+  },
   props: {
     id: {
       type: [Number, String],
@@ -104,7 +101,8 @@ export default {
     return {
       article: {},
       isLoading: true,
-      statusCode: 200
+      statusCode: 200,
+      isFollowLoading: false
     }
   },
   created() {
@@ -116,6 +114,7 @@ export default {
         this.isLoading = true
         const { data } = await getArticleDetail(this.id)
         this.article = data.data
+        console.log(this.article)
         this.handlerImagePreview()
       } catch ({ response }) {
         this.statusCode = response?.status || 500
@@ -126,25 +125,37 @@ export default {
       this.$router.back()
     },
     handlerImagePreview() {
+      // 在 dom 更新完成后执行
       this.$nextTick(function () {
         const articleContent = this.$refs.articleContent
         if (articleContent) {
+          // 拿到文章内容节点下的所有 img 元素
           const imgs = articleContent.querySelectorAll('img')
           const imgSrcs = []
           imgs.forEach((e, i) => {
             imgSrcs.push(e.src)
-            e.addEventListener('click',  () => {
+            e.addEventListener('click', () => {
               // 打开图片预览
-              console.log(this);
               ImagePreview({
                 images: imgSrcs,
                 closeable: true,
-                startPosition: i,
+                startPosition: i
               })
             })
           })
         }
       })
+    },
+    // 文章点赞
+    async onLikeClick() {
+      try {
+        const { data } = await likeArticle(this.id)
+        console.log(data)
+      } catch ({ response: { status } }) {
+        if (status === 401) {
+          this.$toast('请先登录')
+        }
+      }
     }
   }
 }
@@ -188,10 +199,6 @@ export default {
       .publish-date {
         font-size: 12px;
         color: #b7b7b7;
-      }
-      .follow-btn {
-        width: 85px;
-        height: 29px;
       }
     }
 

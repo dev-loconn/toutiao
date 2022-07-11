@@ -28,7 +28,6 @@ export default {
   },
   methods: {
     onItemClick() {
-      console.log(this.article);
       this.$router.push(`/article-detail/${this.article.art_id}`)
     }
   }
