@@ -11,3 +11,9 @@ export const likeArticle = (id) => request.post('/v1_0/article/likings', { targe
 
 // 取消点赞
 export const cancelLikeArticle = (id) => request.delete(`/v1_0/article/likings/${id}`)
+
+// 收藏
+export const collectArticle = (id) => request.post('/v1_0/article/collections', { target: id})
+
+// 取消收藏
+export const cancelCollectArticle = (id) => request.delete(`/v1_0/article/collections/${id}`)

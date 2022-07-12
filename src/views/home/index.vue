@@ -147,10 +147,10 @@ export default {
   // 为文字列表加载更多留出空间
   padding-bottom: 50px;
   // 导航栏样式定义
-  /deep/.van-nav-bar__title {
+  :deep(.van-nav-bar__title) {
     max-width: unset;
   }
-  /deep/.van-icon-search {
+  :deep(.van-icon-search) {
     color: #fff;
     font-size: 16px;
   }
@@ -160,7 +160,7 @@ export default {
     background-color: #ffffff66;
   }
   // 频道列表Tab栏样式定义
-  /deep/.tab-channels {
+  :deep(.tab-channels) {
     position: relative;
     .van-tabs__wrap {
       position: fixed;
@@ -218,7 +218,7 @@ export default {
   }
 
   // 弹出层的关闭按钮样式
-  /deep/.van-icon-cross {
+  :deep(.van-icon-cross) {
     color: #333333;
   }
 }

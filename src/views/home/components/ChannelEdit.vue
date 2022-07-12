@@ -148,7 +148,7 @@ export default {
     }
   }
 
-  /deep/ .van-grid {
+  :deep(.van-grid) {
     .van-grid-item {
       .van-grid-item__content {
         background-color: #f4f5f6;
@@ -158,7 +158,7 @@ export default {
   }
 
   // 我的频道
-  /deep/ .channel-my {
+  :deep(.channel-my) {
     .grid-item-text {
       margin-top: 0;
       margin-left: 2px;
@@ -210,7 +210,7 @@ export default {
   }
 
   // 频道推荐
-  /deep/ .channel-recommend {
+  :deep(.channel-recommend) {
     margin-top: 10px;
     .van-grid-item {
       .van-grid-item__content {
