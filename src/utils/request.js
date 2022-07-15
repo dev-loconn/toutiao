@@ -25,9 +25,7 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(
   // 响应成功
   function (response) {
-    console.log('response', response);
-    const refreshToken = store.getters.refreshToken
-    console.log('refreshToken', refreshToken);
+    // console.log('response', response);
     return response
   },
   // 响应失败

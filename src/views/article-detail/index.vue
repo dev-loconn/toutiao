@@ -50,6 +50,9 @@
 
         <van-divider>正文结束</van-divider>
 
+        <!-- 文章评论 -->
+        <article-comment :articleId="article.art_id"></article-comment>
+
         <!-- 底部区域 -->
         <div class="article-bottom">
           <van-button class="comment-btn" type="default" round size="small"
@@ -91,13 +94,15 @@ import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user.vue'
 import ArticleCollect from '@/components/article-collect.vue'
 import ArticleLike from '@/components/article-like.vue'
+import ArticleComment from '@/components/article-comment.vue'
 
 export default {
   name: 'ArticleDetail',
   components: {
     FollowUser,
     ArticleCollect,
-    ArticleLike
+    ArticleLike,
+    ArticleComment
   },
   props: {
     id: {
