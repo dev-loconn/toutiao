@@ -64,7 +64,7 @@ export default {
 .btn {
   border: none;
   color: #777;
-  font-size: 16px;
+  font-size: 18px;
 }
 .active {
   .van-icon {

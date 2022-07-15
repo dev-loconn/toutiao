@@ -57,9 +57,6 @@ export default {
         this.$emit('update-isfollow', isFollow)
       } catch ({ response }) {
         switch (response?.status) {
-          case 401:
-            this.$toast('请先登录')
-            break
           case 400:
             this.$toast(response.data.message)
             break

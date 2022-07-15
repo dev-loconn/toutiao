@@ -47,7 +47,7 @@
           v-html="article.content"
           ref="articleContent"
         ></div>
-        
+
         <van-divider>正文结束</van-divider>
 
         <!-- 底部区域 -->
@@ -59,8 +59,8 @@
           <article-collect
             v-model="article.is_collected"
             :articleId="article.art_id"
-          ></article-collect>
-          <van-icon color="#777" name="good-job-o" @click="onLikeClick" />
+          />
+          <article-like v-model="article.attitude" :articleId="article.art_id"/>
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
@@ -90,12 +90,14 @@ import { getArticleDetail, likeArticle } from '@/api/news'
 import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user.vue'
 import ArticleCollect from '@/components/article-collect.vue'
+import ArticleLike from '@/components/article-like.vue'
 
 export default {
   name: 'ArticleDetail',
   components: {
     FollowUser,
-    ArticleCollect
+    ArticleCollect,
+    ArticleLike
   },
   props: {
     id: {
@@ -115,12 +117,12 @@ export default {
     this.requestDetailInfo()
   },
   methods: {
+    // 请求文章详情数据
     async requestDetailInfo() {
       try {
         this.isLoading = true
         const { data } = await getArticleDetail(this.id)
         this.article = data.data
-        console.log(this.article)
         this.handlerImagePreview()
       } catch ({ response }) {
         this.statusCode = response?.status || 500
@@ -130,6 +132,7 @@ export default {
     onClickLeft() {
       this.$router.back()
     },
+    // 文章大图查看
     handlerImagePreview() {
       // 在 dom 更新完成后执行
       this.$nextTick(function () {
@@ -151,17 +154,6 @@ export default {
           })
         }
       })
-    },
-    // 文章点赞
-    async onLikeClick() {
-      try {
-        const { data } = await likeArticle(this.id)
-        console.log(data)
-      } catch ({ response: { status } }) {
-        if (status === 401) {
-          this.$toast('请先登录')
-        }
-      }
     }
   }
 }
@@ -181,6 +173,7 @@ export default {
     background-color: #fff;
   }
   .article-detail {
+    background-color: #fff;
     .article-title {
       font-size: 20px;
       padding: 25px 16px;
@@ -217,7 +210,7 @@ export default {
   }
 
   .loading-wrap {
-    padding: 200px 32px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -256,7 +249,7 @@ export default {
     right: 0;
     bottom: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     box-sizing: border-box;
     height: 44px;
