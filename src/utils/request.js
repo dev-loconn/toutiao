@@ -2,41 +2,38 @@ import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
 import { toast } from 'vant'
-import { refreshTokenRequest } from '@/api/user'
 
 const instance = axios.create({
   baseURL: 'http://toutiao.itheima.net'
 })
 
 // 请求拦截器
-instance.interceptors.request.use(function (config) {
-  // 统一添加请求头 Token
-  const token = store.getters.token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+instance.interceptors.request.use(
+  (config) => {
+    const token = store.getters.token
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
   }
-  return config
-}, function (error) {
-  // 对请求错误做些什么
-  return Promise.reject(error)
-})
+)
 
 // 响应拦截器
 instance.interceptors.response.use(
-  // 响应成功
-  function (response) {
-    // console.log('response', response);
+  (response) => {
     return response
   },
-  // 响应失败
-  async function (error) {
+  async (error) => {
     const { response, config } = error
     if (response?.status === 401) {
       try {
         // 获取本地 Token
         const refreshToken = store.getters.refreshToken
         if (!refreshToken) {
-          toast('登录后才能操作')            
+          toast('登录后才能操作')
           router.push('/login')
           return
         }

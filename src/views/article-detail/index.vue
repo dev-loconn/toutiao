@@ -16,7 +16,7 @@
       <!-- /加载中 -->
 
       <!-- 加载完成-文章详情 -->
-      <div class="article-detail" v-else-if="article.title">
+      <div class="article-detail" ref="articleDetail" v-else-if="article.title">
         <!-- 文章标题 -->
         <h1 class="article-title">{{ article.title }}</h1>
         <!-- /文章标题 -->
@@ -48,22 +48,45 @@
           ref="articleContent"
         ></div>
 
-        <van-divider>正文结束</van-divider>
+        <van-divider ref="articleFinish">正文结束</van-divider>
 
         <!-- 文章评论 -->
-        <article-comment :articleId="article.art_id"></article-comment>
+        <article-comment
+          :source="article.art_id"
+          type="a"
+          :list="commentList"
+          @onReply="onReply"
+        />
+
+        <!-- 评论弹出层 -->
+        <van-popup v-model="isPostShow" position="bottom">
+          <article-post-comment
+            :target="article.art_id"
+            @postCommentSuccess="postCommentSuccess"
+          ></article-post-comment>
+        </van-popup>
 
         <!-- 底部区域 -->
         <div class="article-bottom">
-          <van-button class="comment-btn" type="default" round size="small"
-            >写评论</van-button
+          <van-button
+            class="comment-btn"
+            type="default"
+            round
+            size="small"
+            @click="isPostShow = true"
           >
-          <van-icon name="comment-o" :badge="article.comm_count" color="#777" />
+            写评论
+          </van-button>
+          <!-- 评论图标 -->
+          <van-icon name="comment-o" :badge="article.comm_count" color="#777" @click="onCommentIconClick"/>
           <article-collect
             v-model="article.is_collected"
             :articleId="article.art_id"
           />
-          <article-like v-model="article.attitude" :articleId="article.art_id"/>
+          <article-like
+            v-model="article.attitude"
+            :articleId="article.art_id"
+          />
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
@@ -85,16 +108,28 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
+
+    <!-- 评论回复弹出层 -->
+    <van-popup
+      v-model="isReplyShow"
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
+      <!-- pop 的显示和隐藏不会更新里面的内容,所以用v-if来销毁和创建组件达到更新视图的目的  -->
+      <comment-reply v-if="isReplyShow" :comment="currReplyComment" :isReplyShow.sync="isReplyShow"/>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { getArticleDetail, likeArticle } from '@/api/news'
+import { getArticleDetail } from '@/api/news'
 import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user.vue'
 import ArticleCollect from '@/components/article-collect.vue'
 import ArticleLike from '@/components/article-like.vue'
 import ArticleComment from '@/components/article-comment.vue'
+import ArticlePostComment from '@/components/article-post-comment.vue'
+import CommentReply from './components/CommentReply.vue'
 
 export default {
   name: 'ArticleDetail',
@@ -102,7 +137,14 @@ export default {
     FollowUser,
     ArticleCollect,
     ArticleLike,
-    ArticleComment
+    ArticleComment,
+    ArticlePostComment,
+    CommentReply
+  },
+  provide() {
+    return {
+      articleId: this.id
+    }
   },
   props: {
     id: {
@@ -115,7 +157,11 @@ export default {
       article: {},
       isLoading: true,
       statusCode: 200,
-      isFollowLoading: false
+      isFollowLoading: false,
+      isPostShow: false,
+      isReplyShow: false,
+      commentList: [],
+      currReplyComment: null
     }
   },
   created() {
@@ -159,6 +205,26 @@ export default {
           })
         }
       })
+    },
+    // 评论成功回调
+    postCommentSuccess(data) {
+      // 隐藏评论界面
+      this.isPostShow = false
+      // 将最新评论放到数组头部显示
+      this.commentList.unshift(data.new_obj)
+      // 更新评论总数
+      this.article.comm_count++
+    },
+    // 评论回复回调
+    onReply(comment) {
+      console.log('comment');
+      this.isReplyShow = true
+      this.currReplyComment = comment
+    },
+    onCommentIconClick() {
+      //  点击评论图标时滚动到评论界面
+      const articleFinish = this.$refs.articleFinish
+      articleFinish.scrollIntoView()
     }
   }
 }

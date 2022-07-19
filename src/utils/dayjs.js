@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 
 // 导入中文包
 import 'dayjs/locale/zh-cn'
-
 // 相对时间插件
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.locale('zh-cn')
