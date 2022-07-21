@@ -12,10 +12,10 @@
       />
     </van-nav-bar>
     <div class="reply-main">
-      <CommentItem :comment="comment" />
+      <comment-item :comment="comment" />
       <van-cell title="全部回复" />
       <!-- 评论回复列表 -->
-      <article-comment :source="comment.com_id" :list="commentList" type="c" />
+      <article-comment :source="comment.com_id" :list="commentList" type="c" @onReply="onReply"/>
     </div>
     <div class="reply-bot" @click="onWriteReply">
       <span>写回复</span>
@@ -24,7 +24,7 @@
     <!-- 评论弹出层 -->
     <van-popup v-model="isPostShow" position="bottom">
       <article-post-comment
-        :target="comment.com_id"
+        :target="comId"
         :articleId="articleId"
         @postCommentSuccess="postCommentSuccess"
       />
@@ -54,12 +54,14 @@ export default {
   data() {
     return {
       commentList: [],
-      isPostShow: false
+      isPostShow: false,
+      comId: this.comment.com_id
     }
   },
   methods: {
     onWriteReply() {
       this.isPostShow = true
+      this.comId = this.comment.com_id
     },
     // 回复评论成功回调
     postCommentSuccess(data) {
@@ -70,6 +72,11 @@ export default {
       // 更新总回复数
       this.comment.reply_count++
     },
+    // 点击评论项的回复按钮
+    onReply(comment) {
+      this.isPostShow = true
+      this.comId = comment.com_id
+    }
   }
 }
 </script>

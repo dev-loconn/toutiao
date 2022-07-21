@@ -3,14 +3,9 @@
     <!-- 已登录布局 -->
     <div v-if="tokenInfo" class="user login">
       <div class="userinfo">
-        <van-image
-          class="avatar"
-          round
-          fit="cover"
-          :src="profile.photo"
-        />
+        <van-image class="avatar" round fit="cover" :src="profile.photo" />
         <span class="uname">{{ profile.name }}</span>
-        <span class="edit-info">编辑资料</span>
+        <span class="edit-info" @click="$router.push('/profile')">编辑资料</span>
       </div>
       <div class="data-count">
         <div class="count">
@@ -72,7 +67,7 @@ import { getUser } from '@/api/user.js'
 
 export default {
   name: 'MineIndex',
-  data () {
+  data() {
     return {
       profile: {}
     }
@@ -82,21 +77,19 @@ export default {
   },
   methods: {
     // 退出登录
-    logout () {
+    logout() {
       this.$store.dispatch('loginInfo/updateTokenInfoAction', null)
     }
   },
-  async created () {
+  async created() {
     if (!this.tokenInfo) return
-    // 请求用户信息
     try {
-      const {
-        data: { data }
-      } = await getUser()
-      this.profile = data
+      const { data } = await getUser()
+      this.profile = data.data
     } catch ({ response }) {
       if (response?.status === 401) {
         this.$toast.fail('身份认证失败')
+        this.$store.dispatch('loginInfo/updateTokenInfoAction', null)
       } else {
         this.$toast.fail('请求失败')
       }
@@ -109,7 +102,7 @@ export default {
 .user {
   width: 100%;
   height: 200px;
-  background: url("~@/assets/banner.png") no-repeat;
+  background: url('~@/assets/banner.png') no-repeat;
   background-size: cover;
 }
 // 未登录样式
